@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/chat.css">
+</head>
+<body>
+<div id="boat-app">
+
+<div id="form_nickname">
+    <button id="dashboard" class="btn btn-success" onclick= "location.href='/dashboard';">Dashboard</button>
+</div>
+<ul id="messages" v-for="msg in mess" :key="mess">
+    <li style="background-color:#dadada;" v-if="mess.indexOf(msg) % 2 == 0">{{msg.nickname+': '+msg.content}}</li>
+    <li v-if="mess.indexOf(msg) % 2 != 0">{{msg.nickname+': '+msg.content}}</li>
+</ul>
+<form id="form_messages">
+    <input v-model="data_mess.content" id="m" type="text" autocomplete="off" />
+    <button @click.prevent="send()" class="btn btn-success">Send</button>
+</form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    var socket = io();
+
+    var app = new Vue({
+        el: '#boat-app',
+        data: function (){
+            return {
+                mess: [],
+                nickname: '',
+                data_mess: {
+                        'content': '',
+                        'nickname': ''
+                },
+                permission: false
+            }
+        },
+        methods: {
+            check_permission: function (){
+                if(localStorage.getItem('jwt') != null){
+                    this.permission = true;
+                }
+            },
+            list_chat: function (){
+                axios.get("http://localhost:3000/chat/messages")
+                    .then(response => {
+                        this.mess = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            update_chat: function (){
+                axios.post('/chat/messages', this.data_mess)
+                    .then(response => {
+                        this.data_mess = {
+                            'content': '',
+                            'nickname': ''
+                    };
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            send: function (){
+                this.data_mess.nickname = this.nickname;
+                socket.emit('chat message',this.data_mess.content);
+                this.update_chat();
+            }
+        },
+        mounted: function (){
+            this.check_permission();
+            this.list_chat();
+            this.nickname = JSON.parse(localStorage.getItem('user')).username;
+            socket.emit('change nickname',this.nickname);
+            socket.on('chat message', (msg) => {
+                this.mess.push(msg);
+            });
+        }
+    })
+
+</script>
+
+</body>
+</html>

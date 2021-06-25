@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sailors</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/cards.css">
+</head>
+<body>
+
+<div id="boat-app">
+
+<h1 v-if="!boats">Sailor list</h1>
+
+<h1 v-if="boats">{{user.username}}'s boat list</h1>
+
+<button style="margin-top: 2%; margin-bottom: 3%" id="dashboard" class="btn btn-success" onclick= "location.href='/dashboard';">Dashboard</button>
+
+        <div v-if="!boats" id="cards">
+            <figure class="card card--water" v-for="sail in sailors" :key="sailors">
+                <div class="card__image-container">
+                    <img src="https://d2mtioty8nfglf.cloudfront.net/eyJidWNrZXQiOiJwcm9kd2ViYXNzZXRzIiwia2V5IjoiYm9hdHMvNjYwNDYzNC82NjA0NjM0XzIwMTkxMDA5MTAwNzI4ODA1XzFfWExBUkdFLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTAyNCwiaGVpZ2h0Ijo2ODMsImZpdCI6ImNvbnRhaW4iLCJiYWNrZ3JvdW5kIjp7InIiOjI0MSwiZyI6MjQ1LCJiIjoyNDgsImFscGhhIjoxfX19fQ==" alt="Eevee" class="card__image">
+                </div>
+
+                <figcaption class="card__caption">
+                    <h1 class="card__name">Sailor</h1>
+
+                    <table class="card__stats">
+                        <tbody><tr>
+                            <th>Username</th>
+                            <td>{{sail.username}}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{sail.email}}</td>
+                        </tr>
+
+                        <button v-on:click="show_boats(sail.username)">See boats</button>
+
+                        </tbody>
+                    </table>
+                </figcaption>
+            </figure>
+    </div>
+
+    <div v-if="boats" id="cards2">
+        <figure class="card card--normal" v-for="boat in user.boats" :key="user">
+            <div class="card__image-container">
+                <img v-bind:src=boat.boat_image alt="Eevee" class="card__image">
+            </div>
+
+            <figcaption class="card__caption">
+                <h1 class="card__name">Boat</h1>
+
+                <table class="card__stats">
+                    <tbody><tr>
+                        <th>Boat name</th>
+                        <td>{{boat.boat_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Boat location</th>
+                        <td>{{boat.boat_location}}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Boat type</th>
+                        <td>{{boat.boat_type}}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Boat year</th>
+                        <td>{{boat.boat_year}}</td>
+                    </tr>
+
+                    <button v-on:click="show_boats('')">Go back</button>
+
+                    </tbody>
+                </table>
+            </figcaption>
+        </figure>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    var app = new Vue({
+        el: '#boat-app',
+        data: function (){
+            return {
+                boats: false,
+                user: [],
+                sailors: []
+            }
+        },
+        methods: {
+            list_sailors : function (){
+                axios.get("http://localhost:3000/api/sailors")
+                    .then(response => {
+                        console.log(response.data)
+                        this.sailors = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            show_boats: function (username){
+                this.user = this.sailors[this.sailors.findIndex(sailor =>  sailor.username == username)];
+                this.boats = !this.boats;
+            }
+        },
+        mounted: function (){
+            this.list_sailors();
+        }
+    })
+</script>
+
+</body>
+</html>
