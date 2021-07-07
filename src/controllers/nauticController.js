@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('./config');
 
 exports.show_index = function(req, res) {
-    res.sendFile(appRoot  + '/www/home.html');
+    res.sendFile(appRoot  + '/www/index.html');
 };
 
 exports.show_sailors = function(req, res) {
@@ -18,9 +18,9 @@ exports.show_operators = function(req, res) {
     res.sendFile(appRoot  + '/www/operators.html');
 };
 
-exports.show_login = function(req, res) {
-    res.sendFile(appRoot  + '/www/login.html');
-};
+//exports.show_login = function(req, res) {
+    //res.sendFile(appRoot  + '/www/login.html');
+//};
 
 exports.show_register = function(req, res) {
     res.sendFile(appRoot  + '/www/register.html');

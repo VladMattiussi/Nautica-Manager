@@ -12,23 +12,23 @@ module.exports = function(app) {
         .get(nauticController.list_operators).
         post(nauticController.add_operator);
 
-    app.route('/sailors')
-        .get(nauticController.show_sailors);
+    //app.route('/sailors')
+        //.get(nauticController.show_sailors);
 
-    app.route('/operators')
-        .get(nauticController.show_operators);
+    //app.route('/operators')
+        //.get(nauticController.show_operators);
 
-    app.route('/login')
-        .get(nauticController.show_login);
+    //app.route('/login')
+        //.get(nauticController.show_login);
 
-    app.route('/register')
-        .get(nauticController.show_register);
+    //app.route('/register')
+        //.get(nauticController.show_register);
 
-    app.route('/dashboard')
-        .get(nauticController.show_dashboard);
+    //app.route('/dashboard')
+        //.get(nauticController.show_dashboard);
 
-    app.route('/chat')
-        .get(nauticController.show_chat);
+    //app.route('/chat')
+        //.get(nauticController.show_chat);
 
     app.route('/api/sailors/:username')
         .post(nauticController.get_sailor).
